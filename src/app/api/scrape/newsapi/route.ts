@@ -13,6 +13,15 @@ interface PostArticle {
   publishedAt?: string;
 }
 
+type GeminiResponse = {
+  candidates?: {
+    content?: {
+      parts?: { text?: string }[]
+    }
+  }[]
+  error?: { message?: string }
+}
+
 async function analyzeArticle(article: PostArticle): Promise<string> {
   // 기사 내용 최대한 많이 합치기
   let fullText = '';
@@ -29,7 +38,7 @@ async function analyzeArticle(article: PostArticle): Promise<string> {
       contents: [{ parts: [{ text: prompt }] }]
     })
   });
-  const data = await res.json();
+  const data = await res.json() as GeminiResponse;
   console.log('Gemini API response:', JSON.stringify(data, null, 2));
   if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
     return data.candidates[0].content.parts[0].text;
