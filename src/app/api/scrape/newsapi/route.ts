@@ -5,7 +5,15 @@ const NEWS_API_URL = 'https://newsapi.org/v2/top-headlines?country=us&category=b
 const GOOGLE_API_KEY = 'AIzaSyChwFqWPuuHkYA4U40Iv8HGKUplIoVvJ00'
 const GOOGLE_API_URL = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GOOGLE_API_KEY}`
 
-async function analyzeArticle(article: any): Promise<string> {
+interface PostArticle {
+  title: string;
+  content?: string;
+  description?: string;
+  url?: string;
+  publishedAt?: string;
+}
+
+async function analyzeArticle(article: PostArticle): Promise<string> {
   // 기사 내용 최대한 많이 합치기
   let fullText = '';
   if (article.content) fullText += article.content + '\n';
@@ -44,7 +52,7 @@ export async function GET() {
 
     let savedCount = 0
 
-    for (const article of json.articles) {
+    for (const article of json.articles as PostArticle[]) {
       console.log('Article:', article.title, article.publishedAt);
       // 중복 방지: 같은 title+published_at이 있으면 건너뜀
       const { data: existing } = await supabase

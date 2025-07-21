@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,9 +14,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-xl flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-lg">N</span>
               </div>
-              <a href="/" className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent hover:text-gray-200 transition-colors duration-200 px-3 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
+              <Link href="/" className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent hover:text-gray-200 transition-colors duration-200 px-3 py-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400">
                 News Blog
-              </a>
+              </Link>
             </div>
           </div>
         </div>
