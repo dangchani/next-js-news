@@ -213,7 +213,13 @@ export default async function AdminDashboard() {
           </div>
           <div className="p-8">
             <div className="space-y-6">
-              {recentPosts.map((post: any) => (
+              {recentPosts.map((post: {
+                id: number
+                title: string
+                created_at: string
+                published: boolean
+                news_categories?: { name: string }
+              }) => (
                 <div key={post.id} className="flex items-center justify-between p-6 bg-white/50 rounded-xl border border-white/50 hover:bg-white/70 transition-all duration-200">
                   <div className="flex-1">
                     <h4 className="text-lg font-semibold text-slate-900 mb-2">{post.title}</h4>

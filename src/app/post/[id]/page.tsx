@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
-import { cookies } from 'next/headers'
 import Layout from '@/components/Layout'
 import { Metadata } from 'next'
 

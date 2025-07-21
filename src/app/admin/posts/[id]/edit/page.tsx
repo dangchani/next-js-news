@@ -35,7 +35,7 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [fetchData])
 
   const fetchData = async () => {
     try {

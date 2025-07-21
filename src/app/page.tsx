@@ -1,6 +1,4 @@
-import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import Layout from '@/components/Layout'
 import { Metadata } from 'next'
 import ClientPage from './ClientPage'
 

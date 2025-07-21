@@ -24,7 +24,13 @@ export default function Layout({
 }: LayoutProps) {
   const [categories, setCategories] = useState<Category[]>([])
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [pagination, setPagination] = useState<any>(null)
+  const [pagination, setPagination] = useState<{
+    currentPage: number
+    totalPages: number
+    totalPosts: number
+    hasNextPage: boolean
+    hasPrevPage: boolean
+  } | null>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   useEffect(() => {
@@ -63,7 +69,15 @@ export default function Layout({
     try {
       const response = await fetch('/api/posts?limit=1')
       if (response.ok) {
-        const data = await response.json() as { pagination: any }
+        const data = await response.json() as { 
+          pagination: {
+            currentPage: number
+            totalPages: number
+            totalPosts: number
+            hasNextPage: boolean
+            hasPrevPage: boolean
+          }
+        }
         setPagination(data.pagination)
       }
     } catch (error) {
