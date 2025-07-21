@@ -13,6 +13,11 @@ interface PostArticle {
   publishedAt?: string;
 }
 
+type NewsApiResponse = {
+  articles: PostArticle[];
+  [key: string]: any;
+}
+
 type GeminiResponse = {
   candidates?: {
     content?: {
@@ -52,7 +57,7 @@ async function analyzeArticle(article: PostArticle): Promise<string> {
 export async function GET() {
   try {
     const response = await fetch(NEWS_API_URL)
-    const json = await response.json()
+    const json = await response.json() as NewsApiResponse;
     console.log('NewsAPI response:', JSON.stringify(json, null, 2));
 
     if (!json.articles || !Array.isArray(json.articles)) {
@@ -61,7 +66,7 @@ export async function GET() {
 
     let savedCount = 0
 
-    for (const article of json.articles as PostArticle[]) {
+    for (const article of json.articles) {
       console.log('Article:', article.title, article.publishedAt);
       // 중복 방지: 같은 title+published_at이 있으면 건너뜀
       const { data: existing } = await supabase
