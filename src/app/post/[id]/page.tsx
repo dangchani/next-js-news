@@ -110,6 +110,20 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
     notFound()
   }
 
+  // 날짜 고정 포맷 함수
+  function formatDate(dateStr: string | null | undefined) {
+    if (!dateStr) return '';
+    return dateStr.slice(0, 10); // YYYY-MM-DD
+  }
+
+  // 분석 결과가 유효한지 체크
+  function isValidAnalysis(analysis: string | null | undefined) {
+    if (!analysis) return false;
+    if (analysis.startsWith('Analysis failed:')) return false;
+    if (analysis.startsWith('No analysis result.')) return false;
+    return true;
+  }
+
   // 구조화된 데이터 (JSON-LD)
   const structuredData = {
     '@context': 'https://schema.org',
@@ -151,51 +165,41 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      
-      <Layout selectedCategory={post.category_id || 'all'} showSidebar={true}>
+      <Layout>
         {/* 포스트 헤더 */}
         <div className="mb-8 lg:mb-12">
-          <article className="bg-white/70 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-xl lg:shadow-2xl overflow-hidden border border-white/50">
-            {/* 포스트 헤더 */}
+          <article className="bg-white rounded-2xl lg:rounded-3xl shadow-xl lg:shadow-2xl overflow-hidden border border-slate-200">
+            {/* 카테고리 및 날짜 */}
             <div className="p-6 md:p-8 lg:p-12 border-b border-slate-200/50">
-              {/* 카테고리 및 날짜 */}
               <div className="flex items-center text-sm text-slate-500 mb-4 lg:mb-6">
-                <span className="inline-flex items-center px-3 md:px-4 py-1 md:py-2 bg-gradient-to-r from-blue-100 to-indigo-100 text-blue-700 rounded-full text-xs md:text-sm font-semibold">
-                  {post.news_categories?.name}
+                <span className="inline-flex items-center px-3 md:px-4 py-1 md:py-2 bg-slate-100 text-slate-700 rounded-full text-xs md:text-sm font-semibold">
+                  {formatDate(post.published_at || post.created_at)}
                 </span>
-                <span className="mx-3 text-slate-300">•</span>
-                <time 
-                  dateTime={post.published_at || post.created_at} 
-                  className="font-medium"
-                >
-                  {new Date(post.published_at || post.created_at).toLocaleDateString('ko-KR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}
-                </time>
               </div>
-              
-              {/* 제목 */}
-              <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-slate-900 mb-6 lg:mb-8 leading-tight">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-[#222] mb-6 lg:mb-8 leading-tight">
                 {post.title}
               </h1>
-              
-              {/* 요약 */}
               {post.excerpt && (
-                <div className="text-lg md:text-xl text-slate-600 italic border-l-4 border-gradient-to-b from-blue-500 to-indigo-500 pl-4 md:pl-6 py-3 md:py-4 bg-gradient-to-r from-blue-50/50 to-indigo-50/50 rounded-r-xl">
+                <div className="text-base md:text-lg text-[#222] italic border-l-4 border-blue-200 pl-4 md:pl-6 py-3 md:py-4 bg-slate-50 rounded-r-xl">
                   {post.excerpt}
                 </div>
               )}
             </div>
-
             {/* 포스트 본문 */}
             <div className="p-6 md:p-8 lg:p-12">
-              <div className="prose prose-sm md:prose-base lg:prose-lg max-w-none prose-headings:text-slate-900 prose-p:text-slate-700 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-slate-900 prose-blockquote:border-l-blue-500 prose-blockquote:bg-blue-50/50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg">
-                <div dangerouslySetInnerHTML={{ __html: post.content }} />
+              <div className="prose prose-sm md:prose-base lg:prose-lg max-w-none prose-headings:text-[#222] prose-p:text-[#222] prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-[#222] prose-blockquote:border-l-blue-200 prose-blockquote:bg-slate-50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg">
+                <div style={{ color: '#222' }} dangerouslySetInnerHTML={{ __html: post.content }} />
               </div>
             </div>
           </article>
+
+          {/* AI 분석 의견 */}
+          {isValidAnalysis(post.analysis) && (
+            <section className="mt-8 p-6 bg-white rounded-xl border border-slate-200">
+              <h3 className="text-lg font-bold mb-2 text-[#222]">AI Analysis</h3>
+              <pre className="whitespace-pre-wrap text-[#222] text-base leading-relaxed">{post.analysis}</pre>
+            </section>
+          )}
 
           {/* 네비게이션 */}
           <div className="mt-8 lg:mt-12 text-center">
@@ -206,7 +210,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
               <svg className="w-4 h-4 md:w-5 md:h-5 mr-2 md:mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
-              목록으로 돌아가기
+              Back to List
             </Link>
           </div>
         </div>

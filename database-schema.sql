@@ -28,13 +28,28 @@ CREATE TABLE news_posts (
     published BOOLEAN DEFAULT false,
     published_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    analysis TEXT -- AI 분석 결과
+);
+
+-- LOB API 스크랩핑 데이터 테이블
+CREATE TABLE news_lob (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(500),
+    content TEXT,
+    url VARCHAR(1000),
+    author VARCHAR(200),
+    published_at TIMESTAMP WITH TIME ZONE,
+    scraped_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- 인덱스 생성
 CREATE INDEX idx_news_posts_category_id ON news_posts(category_id);
 CREATE INDEX idx_news_posts_published ON news_posts(published);
 CREATE INDEX idx_news_posts_published_at ON news_posts(published_at);
+CREATE INDEX idx_news_lob_scraped_at ON news_lob(scraped_at);
+CREATE INDEX idx_news_lob_published_at ON news_lob(published_at);
 
 -- 초기 관리자 계정 생성 (비밀번호: gksmftkfkd!@)
 INSERT INTO news_admins (username, password_hash) 
