@@ -3,9 +3,10 @@ import { supabase } from '@/lib/supabase'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params
     const body = await request.json() as { published: boolean }
     
     const updateData = {
@@ -17,7 +18,7 @@ export async function PUT(
     const { data, error } = await supabase
       .from('news_posts')
       .update(updateData)
-      .eq('id', params.id)
+      .eq('id', resolvedParams.id)
       .select()
       .single()
 

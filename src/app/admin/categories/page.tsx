@@ -25,7 +25,7 @@ export default function CategoriesPage() {
     try {
       const response = await fetch('/api/admin/categories')
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json() as Category[]
         setCategories(data)
       }
     } catch (error) {
@@ -57,7 +57,7 @@ export default function CategoriesPage() {
         setFormData({ name: '', description: '' })
         fetchCategories()
       } else {
-        const data = await response.json()
+        const data = await response.json() as { error?: string }
         alert(data.error || '오류가 발생했습니다.')
       }
     } catch (error) {
@@ -86,7 +86,7 @@ export default function CategoriesPage() {
       if (response.ok) {
         fetchCategories()
       } else {
-        const data = await response.json()
+        const data = await response.json() as { error?: string }
         alert(data.error || '삭제 중 오류가 발생했습니다.')
       }
     } catch (error) {

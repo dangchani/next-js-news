@@ -4,13 +4,14 @@ import { supabase } from '@/lib/supabase'
 // 개별 포스트 조회
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params
     const { data, error } = await supabase
       .from('news_posts')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', resolvedParams.id)
       .single()
 
     if (error) {
@@ -34,9 +35,10 @@ export async function GET(
 // 포스트 수정
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params
     const body = await request.json() as {
       title: string
       content: string
@@ -65,7 +67,7 @@ export async function PUT(
     const { data, error } = await supabase
       .from('news_posts')
       .update(postData)
-      .eq('id', params.id)
+      .eq('id', resolvedParams.id)
       .select()
       .single()
 
@@ -91,13 +93,14 @@ export async function PUT(
 // 포스트 삭제
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params
     const { error } = await supabase
       .from('news_posts')
       .delete()
-      .eq('id', params.id)
+      .eq('id', resolvedParams.id)
 
     if (error) {
       console.error('포스트 삭제 오류:', error)

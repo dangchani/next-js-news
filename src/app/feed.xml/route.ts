@@ -39,7 +39,9 @@ export async function GET() {
     ${posts.map(post => {
       const content = post.excerpt || post.content.replace(/<[^>]*>/g, '').substring(0, 300) + '...'
       const pubDate = new Date(post.published_at || post.created_at).toUTCString()
-      const category = post.news_categories?.name || '기타'
+      const category = Array.isArray(post.news_categories) && post.news_categories.length > 0 
+        ? post.news_categories[0].name 
+        : '기타'
       
       return `
     <item>

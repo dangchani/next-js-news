@@ -18,7 +18,7 @@ interface Post {
   published: boolean
 }
 
-export default function EditPostPage({ params }: { params: { id: string } }) {
+export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   const [categories, setCategories] = useState<Category[]>([])
   const [post, setPost] = useState<Post | null>(null)
   const [loading, setLoading] = useState(true)
@@ -30,42 +30,53 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
     category_id: '',
     published: false
   })
+  const [postId, setPostId] = useState<string>('')
 
   const router = useRouter()
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
-
-  const fetchData = async () => {
-    try {
-      const [categoriesResponse, postResponse] = await Promise.all([
-        fetch('/api/admin/categories'),
-        fetch(`/api/admin/posts/${params.id}`)
-      ])
-
-      if (categoriesResponse.ok) {
-        const categoriesData = await categoriesResponse.json() as Category[]
-        setCategories(categoriesData)
-      }
-
-      if (postResponse.ok) {
-        const postData = await postResponse.json() as Post
-        setPost(postData)
-        setFormData({
-          title: postData.title,
-          content: postData.content,
-          excerpt: postData.excerpt || '',
-          category_id: postData.category_id || '',
-          published: postData.published
-        })
-      }
-    } catch (error) {
-      console.error('데이터 조회 오류:', error)
-    } finally {
-      setLoading(false)
+    const resolveParams = async () => {
+      const resolvedParams = await params
+      setPostId(resolvedParams.id)
     }
-  }
+    resolveParams()
+  }, [params])
+
+  useEffect(() => {
+    if (!postId) return
+    
+    const fetchData = async () => {
+      try {
+        const [categoriesResponse, postResponse] = await Promise.all([
+          fetch('/api/admin/categories'),
+          fetch(`/api/admin/posts/${postId}`)
+        ])
+
+        if (categoriesResponse.ok) {
+          const categoriesData = await categoriesResponse.json() as Category[]
+          setCategories(categoriesData)
+        }
+
+        if (postResponse.ok) {
+          const postData = await postResponse.json() as Post
+          setPost(postData)
+          setFormData({
+            title: postData.title,
+            content: postData.content,
+            excerpt: postData.excerpt || '',
+            category_id: postData.category_id || '',
+            published: postData.published
+          })
+        }
+      } catch (error) {
+        console.error('데이터 조회 오류:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchData()
+  }, [])
 
   const handleTitleChange = (title: string) => {
     setFormData(prev => ({
@@ -79,7 +90,7 @@ export default function EditPostPage({ params }: { params: { id: string } }) {
     setSaving(true)
 
     try {
-      const response = await fetch(`/api/admin/posts/${params.id}`, {
+      const response = await fetch(`/api/admin/posts/${postId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

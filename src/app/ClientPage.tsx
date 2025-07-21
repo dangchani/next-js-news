@@ -14,7 +14,7 @@ interface Post {
   published_at: string | null
   created_at: string
   updated_at: string
-  news_categories: { name: string } | null
+  news_categories: { name: string }[] | null
 }
 
 interface Pagination {
@@ -123,7 +123,7 @@ export default function ClientPage({ initialPosts }: ClientPageProps) {
                     {/* 카테고리 및 날짜 */}
                     <div className="flex items-center text-sm text-slate-500 mb-4">
                       <span className="inline-flex items-center px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                        {post.news_categories?.name}
+                        {post.news_categories && post.news_categories.length > 0 ? post.news_categories[0].name : '기타'}
                       </span>
                       <span className="mx-3 text-slate-300">•</span>
                       <time dateTime={post.published_at || post.created_at} className="font-medium">

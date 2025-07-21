@@ -4,18 +4,7 @@ import { notFound } from 'next/navigation'
 import Layout from '@/components/Layout'
 import { Metadata } from 'next'
 
-interface Post {
-  id: number
-  title: string
-  content: string
-  excerpt: string | null
-  category_id: string | null
-  published: boolean
-  published_at: string | null
-  created_at: string
-  updated_at: string
-  news_categories: { name: string } | null
-}
+
 
 async function getPost(id: string) {
   const { data, error } = await supabase
@@ -36,8 +25,9 @@ async function getPost(id: string) {
 }
 
 // 동적 메타데이터 생성
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const post = await getPost(params.id)
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const resolvedParams = await params
+  const post = await getPost(resolvedParams.id)
   
   if (!post) {
     return {
@@ -112,8 +102,9 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   }
 }
 
-export default async function PostPage({ params }: { params: { id: string } }) {
-  const post = await getPost(params.id)
+export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params
+  const post = await getPost(resolvedParams.id)
 
   if (!post) {
     notFound()

@@ -2,26 +2,7 @@ import { supabase } from '@/lib/supabase'
 import { Metadata } from 'next'
 import ClientPage from './ClientPage'
 
-interface Post {
-  id: number
-  title: string
-  content: string
-  excerpt: string | null
-  category_id: string | null
-  published: boolean
-  published_at: string | null
-  created_at: string
-  updated_at: string
-  news_categories: { name: string } | null
-}
 
-interface Pagination {
-  currentPage: number
-  totalPages: number
-  totalPosts: number
-  hasNextPage: boolean
-  hasPrevPage: boolean
-}
 
 // SEO 메타데이터
 export const metadata: Metadata = {

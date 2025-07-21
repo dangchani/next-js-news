@@ -4,9 +4,10 @@ import { supabase } from '@/lib/supabase'
 // 카테고리 수정
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params
     const body = await request.json() as { name: string; description?: string }
 
     if (!body.name) {
@@ -23,7 +24,7 @@ export async function PUT(
         description: body.description,
         updated_at: new Date().toISOString()
       })
-      .eq('id', params.id)
+      .eq('id', resolvedParams.id)
       .select()
       .single()
 
@@ -54,14 +55,15 @@ export async function PUT(
 // 카테고리 삭제
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params
     // 해당 카테고리를 사용하는 포스트가 있는지 확인
     const { data: posts, error: postsError } = await supabase
       .from('news_posts')
       .select('id')
-      .eq('category_id', params.id)
+      .eq('category_id', resolvedParams.id)
       .limit(1)
 
     if (postsError) {
@@ -82,7 +84,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('news_categories')
       .delete()
-      .eq('id', params.id)
+      .eq('id', resolvedParams.id)
 
     if (error) {
       console.error('카테고리 삭제 오류:', error)
