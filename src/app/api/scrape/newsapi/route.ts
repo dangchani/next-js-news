@@ -28,7 +28,6 @@ type GeminiResponse = {
 }
 
 async function analyzeArticle(article: PostArticle): Promise<string> {
-  // 기사 내용 최대한 많이 합치기
   let fullText = '';
   if (article.content) fullText += article.content + '\n';
   if (article.description && !fullText.includes(article.description)) fullText += article.description + '\n';
@@ -64,42 +63,44 @@ export async function GET() {
       throw new Error('Invalid news data.')
     }
 
-    let savedCount = 0
-
+    // 아직 저장되지 않은 뉴스 1개만 찾아서 처리
     for (const article of json.articles) {
       const typedArticle: PostArticle = article;
-      console.log('Article:', typedArticle.title, typedArticle.publishedAt);
-      // 중복 방지: 같은 title+published_at이 있으면 건너뜀
       const { data: existing } = await supabase
         .from('news_posts')
         .select('id')
         .eq('title', typedArticle.title)
         .eq('published_at', typedArticle.publishedAt)
-        .single()
+        .single();
 
-      if (existing) continue
-
-      // 기사 내용 최대한 많이 보내서 AI 분석 (영문)
-      const analysis = await analyzeArticle(typedArticle)
-
-      const { error } = await supabase.from('news_posts').insert({
-        title: typedArticle.title,
-        content: typedArticle.content || typedArticle.description || '',
-        excerpt: typedArticle.description || '',
-        published: true,
-        published_at: typedArticle.publishedAt || new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        analysis,
-      })
-
-      if (!error) savedCount++
+      if (!existing) {
+        const analysis = await analyzeArticle(typedArticle);
+        const { error } = await supabase.from('news_posts').insert({
+          title: typedArticle.title,
+          content: typedArticle.content || typedArticle.description || '',
+          excerpt: typedArticle.description || '',
+          published: true,
+          published_at: typedArticle.publishedAt || new Date().toISOString(),
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          analysis,
+        });
+        if (error) {
+          return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+        }
+        return NextResponse.json({
+          success: true,
+          message: `1 news article saved.`,
+          title: typedArticle.title,
+        });
+      }
     }
 
+    // 모두 이미 저장된 경우
     return NextResponse.json({
       success: true,
-      message: `${savedCount} news articles saved.`,
-    })
+      message: 'No new articles to save.',
+    });
   } catch (error) {
     console.error('News save error:', error)
     return NextResponse.json(
