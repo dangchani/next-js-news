@@ -55,7 +55,12 @@ async function analyzeArticle(article: PostArticle): Promise<string> {
 
 export async function GET() {
   try {
-    const response = await fetch(NEWS_API_URL)
+    const response = await fetch(NEWS_API_URL, {
+      headers: {
+        'User-Agent': 'NewsScraperBot/1.0 (+https://news.lob.kr/)',
+        'Accept': 'application/json',
+      }
+    })
     const json = await response.json() as NewsApiResponse;
     console.log('NewsAPI response:', JSON.stringify(json, null, 2));
 
