@@ -15,7 +15,7 @@ interface PostArticle {
 
 type NewsApiResponse = {
   articles: PostArticle[];
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 type GeminiResponse = {
@@ -67,26 +67,27 @@ export async function GET() {
     let savedCount = 0
 
     for (const article of json.articles) {
-      console.log('Article:', article.title, article.publishedAt);
+      const typedArticle: PostArticle = article;
+      console.log('Article:', typedArticle.title, typedArticle.publishedAt);
       // 중복 방지: 같은 title+published_at이 있으면 건너뜀
       const { data: existing } = await supabase
         .from('news_posts')
         .select('id')
-        .eq('title', article.title)
-        .eq('published_at', article.publishedAt)
+        .eq('title', typedArticle.title)
+        .eq('published_at', typedArticle.publishedAt)
         .single()
 
       if (existing) continue
 
       // 기사 내용 최대한 많이 보내서 AI 분석 (영문)
-      const analysis = await analyzeArticle(article)
+      const analysis = await analyzeArticle(typedArticle)
 
       const { error } = await supabase.from('news_posts').insert({
-        title: article.title,
-        content: article.content || article.description || '',
-        excerpt: article.description || '',
+        title: typedArticle.title,
+        content: typedArticle.content || typedArticle.description || '',
+        excerpt: typedArticle.description || '',
         published: true,
-        published_at: article.publishedAt || new Date().toISOString(),
+        published_at: typedArticle.publishedAt || new Date().toISOString(),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         analysis,
