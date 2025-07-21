@@ -190,6 +190,18 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
               <div className="prose prose-sm md:prose-base lg:prose-lg max-w-none prose-headings:text-[#222] prose-p:text-[#222] prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:text-[#222] prose-blockquote:border-l-blue-200 prose-blockquote:bg-slate-50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg">
                 <div style={{ color: '#222' }} dangerouslySetInnerHTML={{ __html: post.content }} />
               </div>
+              {/* 구글 광고 */}
+              <div className="my-8 flex justify-center">
+                {/* 구글 광고 */}
+                <ins className="adsbygoogle"
+                  style={{ display: 'block', width: '100%', maxWidth: 728, height: 90 }}
+                  data-ad-client="ca-pub-9142576868071032"
+                  data-ad-slot="1234567890"
+                  data-ad-format="auto"
+                  data-full-width-responsive="true"
+                ></ins>
+                <script dangerouslySetInnerHTML={{ __html: '(adsbygoogle = window.adsbygoogle || []).push({});' }} />
+              </div>
             </div>
           </article>
 
