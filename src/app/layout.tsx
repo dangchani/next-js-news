@@ -83,6 +83,8 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="News Blog" />
+        {/* Google Search Console site verification */}
+        <meta name="google-site-verification" content="O5RfANg_QJTu3nf3KXAXPICk8fJ7hRz485Msj7K1eKI" />
         
         {/* 파비콘 */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
